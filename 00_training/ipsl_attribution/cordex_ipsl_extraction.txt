@@ -1,0 +1,13 @@
+outpath=/scratchx/cbarnes/gtb_cordex/
+fl=echo `find /bdd/CORDEX/output/EUR-11/*/*/rcp85/r1i1p1/*/*/day/pr/latest1*.nc -maxdepth 0`
+
+for fnm in fl; do
+	if [[ $string == *"My long"* ]]; then
+		echo "."
+	fi
+	echo $fnm;
+	
+	;
+done
+
+

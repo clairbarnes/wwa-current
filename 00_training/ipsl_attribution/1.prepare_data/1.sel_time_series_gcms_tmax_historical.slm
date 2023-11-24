@@ -1,0 +1,17 @@
+#!/bin/bash
+# The job name
+#SBATCH --job-name=tmaxhist
+# Set the error and output files
+#SBATCH --output=tmaxhist.log
+# Wall clock time limit
+#SBATCH --time=8:00:00
+#SBATCH --export=ALL
+# Send an email on failure
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=END
+# Set the initial working directory
+#SBATCH --chdir=/home/cbarnes/WWA/NH_heat_202307/prepare_data/Europe
+
+#add the path of where the script is
+cd /home/cbarnes/WWA/NH_heat_202307/prepare_data/Europe
+bash 1.sel_time_series_gcms_tmax_historical.sh

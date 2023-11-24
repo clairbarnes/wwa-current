@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH --job-name=tmaxscen
+#SBATCH --output=tmaxscen.log
+#SBATCH --time=08:00:00
+# Wall clock time limit
+#SBATCH --time=8:00:00
+#SBATCH --export=ALL
+# Send an email on failure
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=END
+
+cd /home/cbarnes/WWA/NH_heat_202307/prepare_data/Europe
+bash sel_time_series_gcms_tmax_scen.sh

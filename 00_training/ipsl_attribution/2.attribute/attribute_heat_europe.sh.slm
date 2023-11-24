@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH --job-name=attri
+#SBATCH --output=attri.log
+# Wall clock time limit
+#SBATCH --time=8:00:00
+#SBATCH --export=ALL
+# Send an email on failure
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=END
+
+cd /home/cbarnes/WWA/NH_heat_202307/europe
+bash attribute_europe.sh
