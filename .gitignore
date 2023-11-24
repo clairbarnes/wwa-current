@@ -1,0 +1,17 @@
+
+*ipynb_checkpoints*
+*pycache*
+
+*.csv
+*.docx
+*.gif
+*.grib
+*.jpg
+*.json
+*.nc
+*.pdf
+*.png
+*.rdata
+*.zip
+
+*/sf_*
