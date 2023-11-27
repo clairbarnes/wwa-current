@@ -1,6 +1,9 @@
 
 ## IMPORT NECESSARY MODULES
 
+# ignore Numba deprecation warning, it's very annnoying
+import warnings; warnings.filterwarnings("ignore", message = ".+'nopython' keyword argument.+")
+
 import xarray as xr; xr.set_options(keep_attrs = True)
 import pandas as pd
 import numpy as np
@@ -35,7 +38,7 @@ from matplotlib.patches import Rectangle
 matplotlib.rcParams['savefig.bbox'] = "tight"    # always save with tight bounding box
 matplotlib.rcParams["savefig.facecolor"] = "w"   # always save with white (rather than transparent) background
 
-import warnings
+
 warnings.filterwarnings("ignore", message = "facecolor will have no effect.+")                           # warning about change to Cartopy plotting defaults
 warnings.filterwarnings("ignore", message = "__len__ for multi-part geometries is deprecated.+")         # warning about change to Shapely defaults
 warnings.filterwarnings("ignore", message = ".+Results from 'centroid' are likely incorrect.+")            # warning against using centroids without reprojecting
