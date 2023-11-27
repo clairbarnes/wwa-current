@@ -12,6 +12,7 @@
 *.pdf
 *.png
 *.rdata
+*.txt
 *.zip
 
 */sf_*
