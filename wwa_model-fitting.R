@@ -124,7 +124,7 @@ refit <- function(mdl, new_df) {
 ns_pars <- function(mdl, fixed_cov = NA) {
     
     # if no covariate value given, evaluate at all covariate values
-    if(is.na(fixed_cov[1])) fixed_cov <- mdl$cov1
+    if(is.na(unlist(fixed_cov)[1])) fixed_cov <- mdl$cov1
     
     # calculate the nonstationary parameter values
     pars <- mdl$par
@@ -146,11 +146,10 @@ ns_pars <- function(mdl, fixed_cov = NA) {
         
     # return the list of named parameters: location, scale, shape (if applicable)
     if("shape" %in% names(pars)) {
-        return(lapply(list("loc" = loc, "scale" = scale, "shape" = rep(pars["shape"], length(fixed_cov))), unname))
+        return(lapply(list("loc" = loc, "scale" = scale, "shape" = rep(pars["shape"], length(scale))), unname))
     } else {
         return(lapply(list("loc" = loc, "scale" = scale), unname))
     }
-    
 }
 
 
@@ -497,10 +496,10 @@ plot_trend <- function(mdl, ev, ev_year, ylab = NA, legend_pos = "topleft", main
     
     plot(mdl$data$year, mdl$x, type = "s", lwd = 2, col = adjustcolor("black", alpha = 0.5), xlab = "Year", ylab = ylab, main = main, ylim = ylim, ...)
     
-    lines(mdl$data$year, ns_pars(mdl)$loc, col = "black", lwd = 2)
-    matplot(mdl$data$year, eff_return_level(c(6,40), mdl), type = "l", lty = 1, add = T, col = "blue", lwd = c(2,1))
+    lines(mdl$data$year+0.5, ns_pars(mdl)$loc, col = "black", lwd = 2)
+    matplot(mdl$data$year+0.5, eff_return_level(c(6,40), mdl), type = "l", lty = 1, add = T, col = "blue", lwd = c(2,1))
     
-    points(ev_year, ev, col = "magenta", lwd = 2, pch = 0)
+    points(ev_year+0.5, ev, col = "magenta", lwd = 2, pch = 0)
     
     # add legend
     legend(legend_pos, legend = c("location", "1-in-6-year event", "1-in-40-year event"), lty = 1, col = c("black", "blue", "blue"), lwd = c(2,2,1))
