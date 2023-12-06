@@ -1,0 +1,10 @@
+# synthesis update 2021-12-15
+# Change in intensity, present-future, RX30day, Earth, 30 yr
+# model chi2/dof =     0.4547    
+# model uncertainty is neglected
+ 2023 2050    19.6        13.4        22.7        13.4        22.7      3 "CMCC-CM2-SR5 (1) "
+ 2023 2050    18.5        14.4        23.8        14.4        23.8      3 "CMCC-ESM2 (1) "
+ 2023 2050    20.4        12.0        25.8        12.0        25.8      3 "GFDL-CM4 (1) "
+ 2023 2050    27.8        14.6        32.8        14.6        32.8      3 "GFDL-ESM4 (1) "
+ 2023 2050    19.1        17.7        48.5        17.7        48.5      3 "NorESM2-MM (1) "
+ 2023 2050    20.2        16.9        22.7        16.9        22.7      4 "models "

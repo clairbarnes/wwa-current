@@ -1,0 +1,10 @@
+# synthesis update 2021-12-15
+# Probability ratio, present-future, RX30day, Earth, 30 yr
+# model chi2/dof =      17.09    
+# model uncertainty (2&sigma;) factor     6.10    
+ 2023 2050    7.30        2.97        18.5       0.969        55.9      3 "CMCC-CM2-SR5 (1) "
+ 2023 2050    6.42        3.38       0.100E+05   0.942       0.125E+05  3 "CMCC-ESM2 (1) "
+ 2023 2050    2.71        1.62        4.52       0.413        17.8      3 "GFDL-CM4 (1) "
+ 2023 2050    1.15        1.04        1.18       0.188        7.04      3 "GFDL-ESM4 (1) "
+ 2023 2050    1.01        1.01        1.09       0.165        6.17      3 "NorESM2-MM (1) "
+ 2023 2050    2.15       0.347        13.7       0.347        13.7      4 "models "
