@@ -1,11 +1,12 @@
 # synthesis update 2021-12-15
 # Probability ratio, past-present, RX30day, Earth, 30 yr
-# representation uncertainty (2&sigma;) factor     61.8    
+# representation uncertainty (2&sigma;) factor     36.2    
 # model chi2/dof =     0.9788    
 # model uncertainty is neglected
- 1900 2023    5.58       0.600       0.100E+05   0.513E-01   0.289E+05  1 "MSWEP "
- 1900 2023    103.        7.75       0.100E+05   0.792       0.488E+05  1 "TAMSAT "
- 1900 2023    24.0       0.202       0.358E+05   0.202       0.358E+05  2 "observations "
+ 1900 2023    5.58       0.600       0.100E+05   0.815E-01   0.226E+05  1 "MSWEP "
+ 1900 2023    103.        7.75       0.100E+05    1.23       0.346E+05  1 "TAMSAT "
+ 1900 2023    3.91        1.44        444.       0.942E-01   0.149E+04  1 "CPC "
+ 1900 2023    13.1       0.222       0.101E+05   0.222       0.101E+05  2 "observations "
  1900 2023    3.28       0.374        208.       0.374        208.      3 "HadGEM3-GC31-HM (1) "
  1900 2023    3.77        1.09        19.0        1.09        19.0      3 "CMCC-CM2-SR5 (1) "
  1900 2023    6.24        1.55        52.1        1.55        52.1      3 "CMCC-ESM2 (1) "
@@ -14,4 +15,4 @@
  1900 2023   0.595       0.589E-01    3.54       0.589E-01    3.54      3 "NorESM2-LM (1) "
  1900 2023    3.19       0.506        32.5       0.506        32.5      3 "NorESM2-MM (1) "
  1900 2023    2.55        1.24        5.47        1.24        5.47      4 "models "
- 1900 2023    2.63        1.29        5.64       0.698        308.      5 "synthesis "
+ 1900 2023    2.63        1.29        5.62       0.728        164.      5 "synthesis "
