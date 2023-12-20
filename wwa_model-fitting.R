@@ -34,6 +34,9 @@ ns_loglik <- function(pars, cov1, x, dist, fittype) {
     } else if(fittype == "shift") {
         loc = pars["mu0"] + pars["alpha"] * cov1
         scale = pars["sigma0"]
+    } else if(fittype == "shiftscale") {
+        loc = pars["mu0"] + pars["alpha"] * cov1
+        scale = pars["sigma0"] + pars["beta"] * cov1
     } else {
         print(paste(fittype, "not implemented"))
         return()
@@ -60,7 +63,7 @@ ns_loglik <- function(pars, cov1, x, dist, fittype) {
 #'
 #' @export
 #'   
-fit_ns <- function(dist, type = "fixeddisp", data, varnm, covnm_1, lower = F, mintemps = F, ev = NA, ...) {
+fit_ns <- function(dist, type = "fixeddisp", data, varnm, covnm_1, lower = F, mintemps = F, ev = NA, method = "Nelder-Mead", ...) {
     
     # currently only works for distributions fully specified by mean & sd: only tested for normal, lognormal
     if(! dist %in% c("norm", "gev")) {
@@ -74,8 +77,9 @@ fit_ns <- function(dist, type = "fixeddisp", data, varnm, covnm_1, lower = F, mi
     
     # fit model with appropriate number of parameters, pad if necessary
     init <- c("mu0" = mean(x), "sigma0" = sd(x), "alpha" = 0)
+    if(type == "shiftscale") init <- c(init, "beta" = 0)
     if(dist == "gev") init <- c(init, "shape" = 0)
-    fitted <- suppressWarnings(optim(par = init, ns_loglik, cov1 = cov1, x = x, dist = dist, fittype = type))
+    fitted <- suppressWarnings(optim(par = init, ns_loglik, cov1 = cov1, x = x, dist = dist, fittype = type, method = method, hessian = T))
     
     # if looking at minimum temperatures (or minima of negative values generally), so trend & location parameters have been flipped. This may cause some confusion so may have to modify later!
     if(mintemps) {
@@ -93,6 +97,7 @@ fit_ns <- function(dist, type = "fixeddisp", data, varnm, covnm_1, lower = F, mi
     fitted[["data"]] <- data
     fitted[["x"]] <- x
     fitted[["cov1"]] <- data[,covnm_1]
+    fitted[["hessian"]] <- fitted$hessian
     
     fitted[["lower"]] <- lower               # saves having to specify every time later on
     fitted[["mintemps"]] <- mintemps         # look at maxima of 0-temps, rather than minima of observed temps
@@ -145,7 +150,10 @@ ns_pars <- function(mdl, fixed_cov = NA) {
     } else if(mdl$type == "shift") {
         loc = pars["mu0"] + pars["alpha"] * fixed_cov
         scale = rep(pars["sigma0"], length(fixed_cov))
-
+        
+    } else if(mdl$type == "shiftscale") {
+        loc = pars["mu0"] + pars["alpha"] * fixed_cov
+        scale = pars["sigma0"] + pars["beta"] * fixed_cov
         
     } else {
         print(paste(mdl$type,"not implemented"))
@@ -309,6 +317,14 @@ map_from_u <- function(u, mdl, fixed_cov = NA) {
     if(mdl$mintemps) erl <- -erl
                       
     return(erl)
+}
+                      
+#' Convert observations to value under specific distribution
+#'
+#' @export
+#'   
+stransform <- function(mdl, fixed_cov = NA) {
+    map_from_u(u = map_to_u(mdl), mdl, fixed_cov = fixed_cov)
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
