@@ -102,6 +102,14 @@ fit_ns <- function(dist, type = "fixeddisp", data, varnm, covnm_1, lower = F, mi
 
     return(fitted)
 }
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' Calculate Akaike Information Criterion
+#'
+#' @param mdl Fitted attribution model, as output by ns_fit()
+#' @export
+#'
+aic <- function(mdl) 2 * length(mdl$par) + 2 * mdl$value
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -539,7 +547,9 @@ mdl_ests <- function(mdl, cov, cov_cf, ev, rp = NA) {
 #' @export
 #'   
 # wrapper function to get bootstrapped confidence intervals for spreadsheet
-boot_ci <- function(mdl, cov, cov_cf, ev = NA, rp = NA, seed = 42, nsamp = 500, dp = 5) {
+boot_ci <- function(mdl, cov, cov_cf, ev = NA, rp = NA, seed = 42, nsamp = 500, dp = 5, ci = 0.95) {
+    
+    alpha <- 1-ci
     
     # get best estimate from the observed data
     if(is.na(ev)) ev  <- ev
@@ -555,7 +565,7 @@ boot_ci <- function(mdl, cov, cov_cf, ev = NA, rp = NA, seed = 42, nsamp = 500, 
         },
         error = function(cond) {return(rep(NA, 10))})
     })
-    boot_qq <- t(rbind("bestimate" = mdl_res, apply(boot_res, 1, quantile, c(0.025, 0.975), na.rm = T)))
+    boot_qq <- t(rbind("bestimate" = mdl_res, apply(boot_res, 1, quantile, c(alpha/2, 1-(alpha/2)), na.rm = T)))
     if(!is.na(dp)) boot_qq <- round(boot_qq, dp)
     return(boot_qq)
 }
