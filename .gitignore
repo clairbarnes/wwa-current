@@ -9,6 +9,7 @@
 *.jpg
 *.json
 *.nc
+*.ods
 *.pdf
 *.png
 *.rdata
@@ -16,3 +17,5 @@
 *.zip
 
 */sf_*
+
+23-12_black-sea-floods/stations/*
