@@ -14,7 +14,7 @@ load_ts <- function(fnm, col.names) { read.csv(fnm, comment.char = "#", sep = " 
 
 ns_loglik <- function(pars, cov, x, dist, fittype) {
 
-    effect <- rowSums(pars[grepl("alpha", names(pars))] * cov)
+    effect <- rowSums(sapply(names(cov), function(cnm) pars[paste0("alpha_",cnm)] * cov[,cnm]))
     
     # compute nonstationary location & scale
     if(fittype == "fixeddisp") {
@@ -108,8 +108,7 @@ ns_pars <- function(mdl, fixed_cov = NA) {
     
     # calculate the nonstationary parameter values
     pars <- mdl$par
-    
-    effect <- rowSums(pars[grepl("alpha", names(pars)), drop = F] * fixed_cov)
+    effect <- rowSums(matrix(sapply(names(fixed_cov), function(cnm) pars[paste0("alpha_",cnm)] * fixed_cov[,cnm]), nrow = nrow(fixed_cov)))
     
     if(mdl$type == "fixeddisp") {
         
@@ -134,154 +133,6 @@ ns_pars <- function(mdl, fixed_cov = NA) {
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-mdl_ests <- function(mdl) {
-        
-    pars <- mdl$par
-    event_2023 <- mdl$ev
-    
-    cov_2023 = data.frame("gmst" = gmst_2023, "iod" = iod_2023)
-    cov_hist = data.frame("gmst" = gmst_2023 - 1.2, "iod" = iod_2023)
-    cov_neut = data.frame("gmst" = gmst_2023, "iod" = 0)
-    cov_neuthist = data.frame("gmst" = gmst_2023 - 1.2, "iod" = 0)
-
-    rp_2023 <- return_period(mdl, event_2023, fixed_cov = cov_2023)
-    rp_hist <- return_period(mdl, event_2023, fixed_cov = cov_hist)
-    rp_neut <- return_period(mdl, event_2023, fixed_cov = cov_neut)
-    rp_neuthist <- return_period(mdl, event_2023, fixed_cov = cov_neuthist)
-
-    # hacky, but better than nothing - will give correct abs/relative value depending on fit type
-    if(is.infinite(rp_2023)) rp_2023 <- 100
-
-    rl_hist <- eff_return_level(rp_2023, mdl, cov_hist)
-    rl_neut <- eff_return_level(rp_2023, mdl, cov_neut)
-    rl_neuthist <- eff_return_level(rp_2023, mdl, cov_neuthist)
-
-    pr_hist <- prob_ratio(mdl, event_2023, cov_2023, cov_hist)
-    pr_neut <- prob_ratio(mdl, event_2023, cov_2023, cov_neut)
-    pr_neuthist <- prob_ratio(mdl, event_2023, cov_2023, cov_neuthist)
-
-    dI_hist <- int_change(mdl, rp_2023, cov_2023, cov_hist, rel = F)
-    dI_neut <- int_change(mdl, rp_2023, cov_2023, cov_neut, rel = F)
-    dI_neuthist <- int_change(mdl, rp_2023, cov_2023, cov_neuthist, rel = F)
-
-    rdI_hist <- int_change(mdl, rp_2023, cov_2023, cov_hist, rel = T)
-    rdI_neut <- int_change(mdl, rp_2023, cov_2023, cov_neut, rel = T)
-    rdI_neuthist <- int_change(mdl, rp_2023, cov_2023, cov_neuthist, rel = T)
-
-    lss <- ns_pars(mdl, fixed_cov = cov_2023)
-    disp <- lss$scale / lss$loc
-    
-    rp_unc <- 1/(mean(sapply(df$iod[df$year >= 1980], function(i) {
-        1/return_period(mdl, x = event_2023, fixed_cov = data.frame("gmst" = gmst_2023, "iod" = i))
-    })))
-    rp_unc_hist <- 1/(mean(sapply(df$iod[df$year >= 1980], function(i) {
-        1/return_period(mdl, x = event_2023, fixed_cov = data.frame("gmst" = gmst_2023 - 1.2, "iod" = i))
-    })))
-    
-    pr_unc <- rp_unc_hist / rp_unc
-    
-    c(pars, sapply(c("disp", "event_2023", "rl_hist", "rl_neut", "rl_neuthist", "dI_hist", "dI_neut", "dI_neuthist", "rdI_hist", "rdI_neut", 
-                     "rdI_neuthist", "rp_2023", "rp_hist", "rp_neut", "rp_neuthist", "rp_unc", "pr_unc", "pr_hist", "pr_neut", "pr_neuthist"), 
-                   get, envir = environment()))
-}
-
-######################################################################################################################################################
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-######################################################################################################################################################
-
-boot_ci <- function(mdl, nsamp = 1000, seed = 42, alpha = 0.05) {
-    
-    set.seed(seed)
-    mdl_df <- mdl$data
-    res <- sapply(1:nsamp, function(i) {
-        # print(i)
-        lres <- NA
-        while(is.na(lres[1])) {
-            boot_df <- mdl_df[sample(1:nrow(mdl_df), replace = T),]
-            lres <- tryCatch({
-                boot_mdl <- suppressWarnings(refit(mdl, boot_df))
-                mdl_ests(boot_mdl)
-            }, error = function(cond) {return(NA)})
-        }
-        lres
-    })
-    rbind("est" = mdl_ests(mdl), apply(res, 1, quantile, c(alpha/2, 1-(alpha/2)), na.rm = T))
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-cmdl_ests <- function(mdl, rp_2023 = 10) {
-        
-    pars <- mdl$par
-    event_2023 <- mdl$ev
-    
-    cov_2023 = data.frame("gmst" = gmst_2023, "iod" = iod_2023)
-    cov_hist = data.frame("gmst" = gmst_2023 - 1.2, "iod" = iod_2023)
-    cov_neut = data.frame("gmst" = gmst_2023, "iod" = 0)
-    cov_neuthist = data.frame("gmst" = gmst_2023 - 1.2, "iod" = 0)
-
-    # rp_2023 <- return_period(mdl, event_2023, fixed_cov = cov_2023)
-    rp_hist <- return_period(mdl, event_2023, fixed_cov = cov_hist)
-    rp_neut <- return_period(mdl, event_2023, fixed_cov = cov_neut)
-    rp_neuthist <- return_period(mdl, event_2023, fixed_cov = cov_neuthist)
-
-    # hacky, but better than nothing - will give correct abs/relative value depending on fit type
-    # if(is.infinite(rp_2023)) rp_2023 <- 100
-
-    rl_hist <- eff_return_level(rp_2023, mdl, cov_hist)
-    rl_neut <- eff_return_level(rp_2023, mdl, cov_neut)
-    rl_neuthist <- eff_return_level(rp_2023, mdl, cov_neuthist)
-
-    pr_hist <- prob_ratio(mdl, event_2023, cov_2023, cov_hist)
-    pr_neut <- prob_ratio(mdl, event_2023, cov_2023, cov_neut)
-    pr_neuthist <- prob_ratio(mdl, event_2023, cov_2023, cov_neuthist)
-
-    dI_hist <- int_change(mdl, rp_2023, cov_2023, cov_hist, rel = F)
-    dI_neut <- int_change(mdl, rp_2023, cov_2023, cov_neut, rel = F)
-    dI_neuthist <- int_change(mdl, rp_2023, cov_2023, cov_neuthist, rel = F)
-
-    rdI_hist <- int_change(mdl, rp_2023, cov_2023, cov_hist, rel = T)
-    rdI_neut <- int_change(mdl, rp_2023, cov_2023, cov_neut, rel = T)
-    rdI_neuthist <- int_change(mdl, rp_2023, cov_2023, cov_neuthist, rel = T)
-
-    lss <- ns_pars(mdl, fixed_cov = cov_2023)
-    disp <- lss$scale / lss$loc
-    
-    rp_unc <- 1/(mean(sapply(df$iod[df$year >= 1980], function(i) {
-        1/return_period(mdl, x = event_2023, fixed_cov = data.frame("gmst" = gmst_2023, "iod" = i))
-    })))
-    rp_unc_hist <- 1/(mean(sapply(df$iod[df$year >= 1980], function(i) {
-        1/return_period(mdl, x = event_2023, fixed_cov = data.frame("gmst" = gmst_2023 - 1.2, "iod" = i))
-    })))
-    
-    pr_unc <- rp_unc_hist / rp_unc
-    
-    c(pars, sapply(c("disp", "event_2023", "rl_hist", "rl_neut", "rl_neuthist", "dI_hist", "dI_neut", "dI_neuthist", "rdI_hist", "rdI_neut", 
-                     "rdI_neuthist", "rp_2023", "rp_hist", "rp_neut", "rp_neuthist", "rp_unc", "pr_unc", "pr_hist", "pr_neut", "pr_neuthist"), 
-                   get, envir = environment()))
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-cmdl_boot_ci <- function(mdl, rp = 10, nsamp = 1000, seed = 42) {
-    
-    set.seed(seed)
-    mdl_df <- mdl$data
-    res <- sapply(1:nsamp, function(i) {
-        # print(i)
-        lres <- NA
-        while(is.na(lres[1])) {
-            boot_df <- mdl_df[sample(1:nrow(mdl_df), replace = T),]
-            lres <- tryCatch({
-                boot_mdl <- suppressWarnings(refit(mdl, boot_df))
-                cmdl_ests(boot_mdl, rp = rp)
-            }, error = function(cond) {return(NA)})
-        }
-        lres
-    })
-    rbind("est" = cmdl_ests(mdl, rp = rp), apply(res, 1, quantile, c(0.025, 0.975), na.rm = T))
-}
 
 ######################################################################################################################################################
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,7 +201,7 @@ plot_returnlevels <- function(mdl, cov, cov_cf, ev, ylim = NA, pch = 20, ylab = 
             boot_df <- mdl_df[sample(1:nrow(mdl_df), nrow(mdl_df), replace = T),]
             tryCatch({
                 boot_mdl <- refit(mdl, boot_df)
-                print(boot_mdl$par)
+                # print(boot_mdl$par)
                 c(map_from_u(1/x_ci, boot_mdl, fixed_cov = cov), map_from_u(1/x_ci, boot_mdl, fixed_cov = cov_cf))
             }, error = function(cond) {return(rep(NA, length(x_ci)*2))})
         })
@@ -429,3 +280,81 @@ plot_covtrend <- function(mdl, xcov, cov, cov_cf, fixed_cov = NA, ev, ylim = NA,
     # add legend
     legend(legend_pos, legend = c("location", "1-in-6-year event", "1-in-40-year event"), lty = 1, col = c("black", "blue", "blue"), lwd = c(2,2,1))
 }
+
+######################################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+######################################################################################################################################################
+## MODEL FITTING RESULTS
+
+cmdl_ests <- function(mdl, rp_2023 = 10) {
+        
+    pars <- mdl$par
+    event_2023 <- mdl$ev
+    
+    cov_2023 = data.frame("gmst" = gmst_2023, "iod" = iod_2023)
+    cov_hist = data.frame("gmst" = gmst_2023 - 1.2, "iod" = iod_2023)
+    cov_neut = data.frame("gmst" = gmst_2023, "iod" = 0)
+    cov_neuthist = data.frame("gmst" = gmst_2023 - 1.2, "iod" = 0)
+
+    # rp_2023 <- return_period(mdl, event_2023, fixed_cov = cov_2023)
+    rp_hist <- return_period(mdl, event_2023, fixed_cov = cov_hist)
+    rp_neut <- return_period(mdl, event_2023, fixed_cov = cov_neut)
+    rp_neuthist <- return_period(mdl, event_2023, fixed_cov = cov_neuthist)
+
+    # hacky, but better than nothing - will give correct abs/relative value depending on fit type
+    # if(is.infinite(rp_2023)) rp_2023 <- 100
+
+    rl_hist <- eff_return_level(rp_2023, mdl, cov_hist)
+    rl_neut <- eff_return_level(rp_2023, mdl, cov_neut)
+    rl_neuthist <- eff_return_level(rp_2023, mdl, cov_neuthist)
+
+    pr_hist <- prob_ratio(mdl, event_2023, cov_2023, cov_hist)
+    pr_neut <- prob_ratio(mdl, event_2023, cov_2023, cov_neut)
+    pr_neuthist <- prob_ratio(mdl, event_2023, cov_2023, cov_neuthist)
+
+    dI_hist <- int_change(mdl, rp_2023, cov_2023, cov_hist, rel = F)
+    dI_neut <- int_change(mdl, rp_2023, cov_2023, cov_neut, rel = F)
+    dI_neuthist <- int_change(mdl, rp_2023, cov_2023, cov_neuthist, rel = F)
+
+    rdI_hist <- int_change(mdl, rp_2023, cov_2023, cov_hist, rel = T)
+    rdI_neut <- int_change(mdl, rp_2023, cov_2023, cov_neut, rel = T)
+    rdI_neuthist <- int_change(mdl, rp_2023, cov_2023, cov_neuthist, rel = T)
+
+    lss <- ns_pars(mdl, fixed_cov = cov_2023)
+    disp <- lss$scale / lss$loc
+    
+    rp_unc <- 1/(mean(sapply(df$iod[df$year >= 1980], function(i) {
+        1/return_period(mdl, x = event_2023, fixed_cov = data.frame("gmst" = gmst_2023, "iod" = i))
+    })))
+    rp_unc_hist <- 1/(mean(sapply(df$iod[df$year >= 1980], function(i) {
+        1/return_period(mdl, x = event_2023, fixed_cov = data.frame("gmst" = gmst_2023 - 1.2, "iod" = i))
+    })))
+    
+    pr_unc <- rp_unc_hist / rp_unc
+    
+    c(pars, sapply(c("disp", "event_2023", "rl_hist", "rl_neut", "rl_neuthist", "dI_hist", "dI_neut", "dI_neuthist", "rdI_hist", "rdI_neut", 
+                     "rdI_neuthist", "rp_2023", "rp_hist", "rp_neut", "rp_neuthist", "rp_unc", "pr_unc", "pr_hist", "pr_neut", "pr_neuthist"), 
+                   get, envir = environment()))
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+cmdl_boot_ci <- function(mdl, rp = 10, nsamp = 1000, seed = 42) {
+    
+    set.seed(seed)
+    mdl_df <- mdl$data
+    res <- sapply(1:nsamp, function(i) {
+        # print(i)
+        lres <- NA
+        while(is.na(lres[1])) {
+            boot_df <- mdl_df[sample(1:nrow(mdl_df), replace = T),]
+            lres <- tryCatch({
+                boot_mdl <- suppressWarnings(refit(mdl, boot_df))
+                cmdl_ests(boot_mdl, rp = rp)
+            }, error = function(cond) {return(NA)})
+        }
+        lres
+    })
+    rbind("est" = cmdl_ests(mdl, rp = rp), apply(res, 1, quantile, c(0.025, 0.975), na.rm = T))
+}
+

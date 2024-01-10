@@ -288,8 +288,9 @@ prob_ratio <- function(mdl, ev, cov, cov_cf) {
 #'
 #' @export
 #'   
-map_from_u <- function(u, mdl, fixed_cov = NA) {
+map_from_u <- function(mdl, u, fixed_cov = NA) {
     
+    if(missing(u)) u <- map_to_u(mdl, fixed_cov = fixed_cov)
     pars <- ns_pars(mdl, fixed_cov = fixed_cov)
     
     # retrieve the actual fitted model parameters if they were flipped for fitting
@@ -300,9 +301,10 @@ map_from_u <- function(u, mdl, fixed_cov = NA) {
         
     # map quantile onto stationary distribution
     if(mdl$dist == "norm") {
-        erl <- sapply(1:length(u), function(j) {
-            qnorm(u[j], mean = pars$loc, sd = pars$scale, lower.tail = mdl$lower)
-        })
+        # erl <- sapply(1:length(u), function(j) {
+        #     qnorm(u[j], mean = pars$loc, sd = pars$scale, lower.tail = mdl$lower)
+        # })
+        erl <- qnorm(u, mean = pars$loc, sd = pars$scale, lower.tail = mdl$lower)
     } else if(mdl$dist == "gev") {
         erl <- sapply(1:length(u), function(j) {
             sapply(1:length(pars$loc), function(i) {
@@ -324,7 +326,7 @@ map_from_u <- function(u, mdl, fixed_cov = NA) {
 #' @export
 #'   
 stransform <- function(mdl, fixed_cov = NA) {
-    map_from_u(u = map_to_u(mdl), mdl, fixed_cov = fixed_cov)
+    map_from_u(mdl, u = map_to_u(mdl), fixed_cov = fixed_cov)
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -333,9 +335,9 @@ stransform <- function(mdl, fixed_cov = NA) {
 #'
 #' @export
 #'   
-eff_return_level <- function(rp, mdl, fixed_cov = NA) {
+eff_return_level <- function(mdl, rp, fixed_cov = NA) {
     
-    map_from_u(1/rp, mdl, fixed_cov = fixed_cov)
+    map_from_u(mdl, 1/rp, fixed_cov = fixed_cov)
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -358,8 +360,8 @@ int_change <- function(mdl, rp = NA, cov, cov_cf, relative = F) {
     if(rp < 1) { rp <- 1/rp } else { rp <- rp }
     
     # get effective return levels
-    rl <- eff_return_level(rp, mdl, fixed_cov = cov)
-    rl_cf <- eff_return_level(rp, mdl, fixed_cov = cov_cf)
+    rl <- eff_return_level(mdl, rp, fixed_cov = cov)
+    rl_cf <- eff_return_level(mdl, rp, fixed_cov = cov_cf)
     
     # if variable is logged, convert to real values first
     if(substr(mdl$varnm, 1, 5) == "log10") {
@@ -395,11 +397,11 @@ plot_returnlevels <- function(mdl, cov, cov_cf, ev, ylim = NA, pch = 20, ylab = 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # calculate return periods & return levels
     
-    rl_curve_pres <- map_from_u(1/rp_x, mdl, fixed_cov = cov)
-    rl_curve_cf <- map_from_u(1/rp_x, mdl, fixed_cov = cov_cf)
+    rl_curve_pres <- map_from_u( mdl, 1/rp_x,fixed_cov = cov)
+    rl_curve_cf <- map_from_u(mdl, 1/rp_x, fixed_cov = cov_cf)
     
-    rl_obs_pres <- map_from_u(map_to_u(mdl), mdl, fixed_cov = cov)
-    rl_obs_cf <- map_from_u(map_to_u(mdl), mdl, fixed_cov = cov_cf)
+    rl_obs_pres <- map_from_u(mdl, map_to_u(mdl), fixed_cov = cov)
+    rl_obs_cf <- map_from_u(mdl, map_to_u(mdl), fixed_cov = cov_cf)
     
     rp_event_pres <- 1/map_to_u(mdl, ev, fixed_cov = cov)
     rp_event_cf <- 1/map_to_u(mdl, ev, fixed_cov = cov_cf)
@@ -445,7 +447,7 @@ plot_returnlevels <- function(mdl, cov, cov_cf, ev, ylim = NA, pch = 20, ylab = 
             boot_df <- mdl_df[sample(1:nrow(mdl_df), nrow(mdl_df), replace = T),]
             tryCatch({
                 boot_mdl <- fit_ns(mdl$dist, mdl$type, boot_df, varnm = mdl$varnm, covnm_1 = mdl$covnm_1, lower = mdl$lower, mintemps = mdl$mintemps, ev = ev)
-                c(map_from_u(1/x_ci, boot_mdl, fixed_cov = cov), map_from_u(1/x_ci, boot_mdl, fixed_cov = cov_cf))
+                c(map_from_u(boot_mdl, 1/x_ci, fixed_cov = cov), map_from_u(boot_mdl, 1/x_ci, fixed_cov = cov_cf))
             }, error = function(cond) {return(rep(NA, length(x_ci)*2))})
         })
         est_ci <- apply(boot_res, 1, quantile, c(0.025, 0.975), na.rm = T)
@@ -481,8 +483,8 @@ plot_gmsttrend <- function(mdl, cov, cov_cf, ev, ylim = NA, ylab = NA, legend_po
     
     # trend lines
     lines(mdl$cov1, ns_pars(mdl)$loc, lwd = 3, col = "black", lty = 1)
-    lines(mdl$cov1, eff_return_level(6, mdl), col = "blue", lwd = 2, lty = 1)
-    lines(mdl$cov1, eff_return_level(40, mdl), col = "blue", lwd = 1, lty = 1)
+    lines(mdl$cov1, eff_return_level(mdl, 6), col = "blue", lwd = 2, lty = 1)
+    lines(mdl$cov1, eff_return_level(mdl, 40), col = "blue", lwd = 1, lty = 1)
     
     # get confidence interval for mu'
     mdl_df <- mdl$data
@@ -521,7 +523,7 @@ plot_trend <- function(mdl, ev, ev_year, ylab = NA, legend_pos = "topleft", main
     plot(mdl$data$year, mdl$x, type = "s", lwd = 2, col = adjustcolor("black", alpha = 0.5), xlab = "Year", ylab = ylab, main = main, ylim = ylim, ...)
     
     lines(mdl$data$year+0.5, ns_pars(mdl)$loc, col = "black", lwd = 2)
-    matplot(mdl$data$year+0.5, eff_return_level(c(6,40), mdl), type = "l", lty = 1, add = T, col = "blue", lwd = c(2,1))
+    matplot(mdl$data$year+0.5, eff_return_level(mdl, c(6,40)), type = "l", lty = 1, add = T, col = "blue", lwd = c(2,1))
     
     points(ev_year+0.5, ev, col = "magenta", lwd = 2, pch = 0)
     
@@ -539,8 +541,10 @@ plot_trend <- function(mdl, ev, ev_year, ylab = NA, legend_pos = "topleft", main
 mdl_ests <- function(mdl, cov, cov_cf, ev, rp = NA) {
 
     pars <- mdl$par
-    disp <- unname(pars["sigma0"] / pars["mu0"])
+    current_pars <- ns_pars(mdl, fixed_cov = cov)
+    disp <- current_pars$scale / current_pars$loc
 
+    if(missing(ev)) ev <- mdl$ev
     if(is.na(rp)) rp <- return_period(mdl, ev, fixed_cov = cov)
 
     if(is.finite(rp)) {
@@ -552,7 +556,7 @@ mdl_ests <- function(mdl, cov, cov_cf, ev, rp = NA) {
           "dI_abs" = int_change(mdl, rp, cov, cov_cf, relative = F),
           "dI_rel" = int_change(mdl, rp, cov, cov_cf, relative = T))
     } else {
-        return(rep(NA, 10))
+        return(rep(NA, 6 + length(pars)))
     }
 }
 
@@ -563,12 +567,12 @@ mdl_ests <- function(mdl, cov, cov_cf, ev, rp = NA) {
 #' @export
 #'   
 # wrapper function to get bootstrapped confidence intervals for spreadsheet
-boot_ci <- function(mdl, cov, cov_cf, ev = NA, rp = NA, seed = 42, nsamp = 500, dp = 5, ci = 0.95) {
+boot_ci <- function(mdl, cov, cov_cf, ev, rp = NA, seed = 42, nsamp = 500, dp = NA, ci = 0.95) {
     
     alpha <- 1-ci
     
     # get best estimate from the observed data
-    if(is.na(ev)) ev  <- ev
+    if(missing(ev)) ev <- mdl$ev
     mdl_res <- mdl_ests(mdl, cov, cov_cf, ev, rp = rp)
     
     # get bootstrap sample
@@ -576,8 +580,8 @@ boot_ci <- function(mdl, cov, cov_cf, ev = NA, rp = NA, seed = 42, nsamp = 500, 
     boot_res <- sapply(1:nsamp, function(i) {
         boot_df <- mdl$data[sample(1:nrow(mdl$data), replace = T),]
         tryCatch({
-            boot_mdl <- fit_ns(mdl$dist, mdl$type, boot_df, varnm = mdl$varnm, covnm_1 = mdl$covnm_1, lower = mdl$lower, mintemps = mdl$mintemps, ev = ev)
-            mdl_ests(boot_mdl, cov, cov_cf, ev, rp = rp)
+            boot_mdl <- refit(mdl, new_df = boot_df)
+            mdl_ests(boot_mdl, cov, cov_cf, ev = ev, rp = rp)
         },
         error = function(cond) {return(rep(NA, 10))})
     })
@@ -612,7 +616,7 @@ cmodel_results <- function(mdl, rp = 10, cov_pres, cov_pi = NA, cov_fut = NA, ns
     mdl_proj <- fit_ns(mdl$dist, mdl$type, df[df$year <= y_fut,], varnm = mdl$varnm, covnm_1 = mdl$covnm_1, lower = mdl$lower, mintemps = mdl$mintemps, ev = mdl$ev)
     
     # get return level to use for analysis
-    event_rl <- eff_return_level(rp = rp, mdl_attr, fixed_cov = cov_pres)
+    event_rl <- eff_return_level(mdl_attr, rp = rp, fixed_cov = cov_pres)
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Bootstrap each set of model results
