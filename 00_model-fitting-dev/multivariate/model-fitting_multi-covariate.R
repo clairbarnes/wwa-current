@@ -151,11 +151,11 @@ plot_returnlevels <- function(mdl, cov, cov_cf, ev, ylim = NA, pch = 20, ylab = 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # calculate return periods & return levels
     
-    rl_curve_pres <- map_from_u(1/rp_x, mdl, fixed_cov = cov)
-    rl_curve_cf <- map_from_u(1/rp_x, mdl, fixed_cov = cov_cf)
+    rl_curve_pres <- map_from_u(mdl, 1/rp_x, fixed_cov = cov)
+    rl_curve_cf <- map_from_u(mdl, 1/rp_x, fixed_cov = cov_cf)
 
-    rl_obs_pres <- map_from_u(map_to_u(mdl), mdl, fixed_cov = cov)
-    rl_obs_cf <- map_from_u(map_to_u(mdl), mdl, fixed_cov = cov_cf)
+    rl_obs_pres <- map_from_u(mdl, map_to_u(mdl), fixed_cov = cov)
+    rl_obs_cf <- map_from_u(mdl, map_to_u(mdl), fixed_cov = cov_cf)
 
     rp_event_pres <- 1/map_to_u(mdl, ev, fixed_cov = cov)
     rp_event_cf <- 1/map_to_u(mdl, ev, fixed_cov = cov_cf)
@@ -202,7 +202,7 @@ plot_returnlevels <- function(mdl, cov, cov_cf, ev, ylim = NA, pch = 20, ylab = 
             tryCatch({
                 boot_mdl <- refit(mdl, boot_df)
                 # print(boot_mdl$par)
-                c(map_from_u(1/x_ci, boot_mdl, fixed_cov = cov), map_from_u(1/x_ci, boot_mdl, fixed_cov = cov_cf))
+                c(map_from_u(boot_mdl, 1/x_ci, fixed_cov = cov), map_from_u(boot_mdl, 1/x_ci, fixed_cov = cov_cf))
             }, error = function(cond) {return(rep(NA, length(x_ci)*2))})
         })
         est_ci <- apply(boot_res, 1, quantile, c(0.025, 0.975), na.rm = T)
