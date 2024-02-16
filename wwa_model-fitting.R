@@ -583,7 +583,7 @@ boot_ci <- function(mdl, cov, cov_cf, ev, rp = NA, seed = 42, nsamp = 500, dp = 
             boot_mdl <- refit(mdl, new_df = boot_df)
             mdl_ests(boot_mdl, cov, cov_cf, ev = ev, rp = rp)
         },
-        error = function(cond) {return(rep(NA, 10))})
+        error = function(cond) {return(rep(NA, length(mdl_res)))})
     })
     boot_qq <- t(rbind("bestimate" = mdl_res, apply(boot_res, 1, quantile, c(alpha/2, 1-(alpha/2)), na.rm = T)))
     if(!is.na(dp)) boot_qq <- round(boot_qq, dp)
