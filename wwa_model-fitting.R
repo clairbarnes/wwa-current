@@ -519,7 +519,7 @@ plot_trend <- function(mdl, ev, ev_year, ylab = NA, legend_pos = "topleft", main
     if(is.na(ylim[1])) { ylim <- range(pretty(mdl$x)) }
     if(missing(ev)) { ev <- mdl$ev }
     if(missing(ev_year)) { ev_year <- mdl$data$year[which.min(abs(mdl$x - ev))] }
-    
+
     plot(mdl$data$year, mdl$x, type = "s", lwd = 2, col = adjustcolor("black", alpha = 0.5), xlab = "Year", ylab = ylab, main = main, ylim = ylim, ...)
     
     lines(mdl$data$year+0.5, ns_pars(mdl)$loc, col = "black", lwd = 2)
@@ -643,4 +643,19 @@ cmodel_results <- function(mdl, rp = 10, cov_pres, cov_pi = NA, cov_fut = NA, ns
     res <- t(data.frame(c(ci_eval, "rp_value" = event_rl, ci_attr, ci_proj)))     
     rownames(res) <- paste0(mdl$varnm, " ~ ", mdl$covnm_1, " (rp", rp,")")
     return(res)
+}
+
+
+########################################################################################
+# Handy support function that has no other home
+
+panel.cor <- function(x, y, digits = 2,...) {
+    usr <- par("usr")
+    par(usr = c(0, 1, 0, 1))
+    r <- cor(x, y)
+    txt <- round(r, digits)
+    cex.cor <- 1
+    r_col <- c("blue", "cornflowerblue", "turquoise", "yellow", "orange", "red4", "magenta")[findInterval(r, c(-1,-0.7,-0.4,-0.1,0.1,0.4,0.7,1))]
+    text(0.5, 0.5, txt, cex = cex.cor, col = r_col, font = 2)
+    par(usr = usr)
 }
