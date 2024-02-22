@@ -219,23 +219,23 @@ plot_returnlevels <- function(mdl, cov, cov_cf, ev, ylim = NA, pch = 20, ylab = 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-plot_trend <- function(mdl, ev, ev_year, ylab = NA, legend_pos = "topleft", main = "", ylim = NA, lwd = 2, ...) {
+# plot_trend <- function(mdl, ev, ev_year, ylab = NA, legend_pos = "topleft", main = "", ylim = NA, lwd = 2, ...) {
     
-    if(is.na(ylab)) {ylab <- mdl$varnm}
-    if(is.na(ylim[1])) { ylim <- range(pretty(mdl$x)) }
-    if(missing(ev)) { ev <- mdl$ev }
-    if(missing(ev_year)) { ev_year <- mdl$data$year[which.min(abs(mdl$x - ev))] }
+#     if(is.na(ylab)) {ylab <- mdl$varnm}
+#     if(is.na(ylim[1])) { ylim <- range(pretty(mdl$x)) }
+#     if(missing(ev)) { ev <- mdl$ev }
+#     if(missing(ev_year)) { ev_year <- mdl$data$year[which.min(abs(mdl$x - ev))] }
     
-    plot(mdl$data$year, mdl$x, type = "S", lwd = lwd, col = adjustcolor("black", alpha = 1), xlab = "Year", ylab = ylab, main = main, ylim = ylim, ...)
+#     plot(mdl$data$year, mdl$x, type = "S", lwd = lwd, col = adjustcolor("black", alpha = 1), xlab = "Year", ylab = ylab, main = main, ylim = ylim, ...)
     
-    lines(mdl$data$year-0.5, ns_pars(mdl)$loc, col = adjustcolor("black", alpha = 0.5), lwd = lwd)
-    matplot(mdl$data$year-0.5, eff_return_level(c(6,40), mdl), type = "l", lty = 1, add = T, col = adjustcolor("blue", alpha = 0.5), lwd = c(lwd, max(1,lwd -1)))
+#     lines(mdl$data$year-0.5, ns_pars(mdl)$loc, col = adjustcolor("black", alpha = 0.5), lwd = lwd)
+#     matplot(mdl$data$year-0.5, eff_return_level(c(6,40), mdl), type = "l", lty = 1, add = T, col = adjustcolor("blue", alpha = 0.5), lwd = c(lwd, max(1,lwd -1)))
     
-    points(ev_year-0.5, ev, col = "magenta", lwd = 2, pch = 0)
+#     points(ev_year-0.5, ev, col = "magenta", lwd = 2, pch = 0)
     
-    # add legend
-    legend(legend_pos, legend = c("location", "1-in-6-year event", "1-in-40-year event"), lty = 1, col = c("black", "blue", "blue"), lwd = c(lwd,lwd,max(1,lwd -1)))
-}
+#     # add legend
+#     legend(legend_pos, legend = c("location", "1-in-6-year event", "1-in-40-year event"), lty = 1, col = c("black", "blue", "blue"), lwd = c(lwd,lwd,max(1,lwd -1)))
+# }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -258,8 +258,8 @@ plot_covtrend <- function(mdl, xcov, cov, cov_cf, fixed_cov = NA, ev, ylim = NA,
     
     # trend lines
     lines(x[o], ns_pars(mdl, fixed_cov = fixed_cov)$loc[o], lwd = 3, col = "black", lty = 1)
-    lines(x[o], eff_return_level(6, mdl, fixed_cov = fixed_cov)[o], col = "blue", lwd = 3, lty = 1)
-    lines(x[o], eff_return_level(40, mdl, fixed_cov = fixed_cov)[o], col = "blue", lwd = 2, lty = 1)
+    lines(x[o], eff_return_level(mdl, 6, fixed_cov = fixed_cov)[o], col = "blue", lwd = 3, lty = 1)
+    lines(x[o], eff_return_level(mdl, 50, fixed_cov = fixed_cov)[o], col = "blue", lwd = 2, lty = 1)
     
     # # get confidence interval for mu'
     # mdl_df <- mdl$data
