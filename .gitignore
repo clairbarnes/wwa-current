@@ -15,6 +15,7 @@
 *.pdf
 *.png
 *.rdata
+*.Rdata
 *.txt
 *.xlsx
 *.zip
