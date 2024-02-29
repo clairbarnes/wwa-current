@@ -342,7 +342,7 @@ eff_return_level <- function(mdl, rp, fixed_cov = NA) {
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' Effective return level
+#' Intensity change
 #'
 #' @export
 #'   
