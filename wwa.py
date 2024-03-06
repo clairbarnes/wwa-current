@@ -259,6 +259,8 @@ def decode_times(ts):
         new_times = [np.datetime64(startdate + relativedelta(years = i)) for i in range(len(ts.time))]
     elif inc == "months":
         new_times = [np.datetime64(startdate + relativedelta(months = i)) for i in range(len(ts.time))]
+    elif inc == "days":
+        new_times = [np.datetime64(startdate + relativedelta(days = i)) for i in range(len(ts.time))]
     else:
         print("TBD: " +inc)
         return
