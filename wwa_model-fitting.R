@@ -570,6 +570,9 @@ mdl_ests <- function(mdl, cov, cov_cf, ev, rp = NA) {
 boot_ci <- function(mdl, cov, cov_cf, ev, rp = NA, seed = 42, nsamp = 500, dp = NA, ci = 0.95) {
     
     alpha <- 1-ci
+
+    cov <- cov[,mdl$covnm, drop = F]
+    cov_cf <- cov_cf[,mdl$covnm, drop = F]
     
     # get best estimate from the observed data
     if(missing(ev)) ev <- mdl$ev
