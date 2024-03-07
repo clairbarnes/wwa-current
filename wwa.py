@@ -256,11 +256,11 @@ def decode_times(ts):
     startdate = pd.Timestamp(re.sub(".+since ", "", ts.time.units)+' 00:00:00.000000').to_pydatetime()
     
     if inc == "years":
-        new_times = [np.datetime64(startdate + relativedelta(years = i)) for i in range(len(ts.time))]
+        new_times = [np.datetime64(startdate + relativedelta(years = i)) for i in ts.time.values]
     elif inc == "months":
-        new_times = [np.datetime64(startdate + relativedelta(months = i)) for i in range(len(ts.time))]
+        new_times = [np.datetime64(startdate + relativedelta(months = i)) for i in ts.time.values]
     elif inc == "days":
-        new_times = [np.datetime64(startdate + relativedelta(days = i)) for i in range(len(ts.time))]
+        new_times = [np.datetime64(startdate + relativedelta(days = i)) for i in ts.time.values]
     else:
         print("TBD: " +inc)
         return
