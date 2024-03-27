@@ -1,0 +1,14 @@
+# synthesis update 2021-12-15
+# Probability ratio, past-present, RX1day, Earth, 10 yr
+# representation uncertainty (2&sigma;) factor     8.00    
+# model chi2/dof =     0.3701    
+# model uncertainty is neglected
+ 1900 2020    1.01       0.701E-01    19.0       0.343E-01    36.8      1 "chirps "
+ 1900 2020    2.63       0.885        9.06       0.252        29.6      1 "era5land "
+ 1900 2020    8.07        1.33        25.0       0.514        86.0      1 "mswep "
+ 1900 2020    2.78       0.171        42.5       0.171        42.5      2 "observations "
+ 1900 2020    1.77       0.903        3.74       0.903        3.74      3 "CanESM2 r1i1p1 CRCM5 () "
+ 1900 2020    1.83       0.842        3.83       0.842        3.83      3 "HadGEM2-ES r1i1p1 RegCM4-7 () "
+ 1900 2020    1.27       0.628        2.38       0.628        2.38      3 "MPI-ESM-LR r1i1p1 REMO2015 () "
+ 1900 2020    1.58        1.04        2.37        1.04        2.37      4 "models "
+ 1900 2020    1.60        1.06        2.38       0.512        8.32      5 "synthesis "

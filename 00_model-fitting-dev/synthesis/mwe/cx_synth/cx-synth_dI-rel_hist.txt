@@ -1,0 +1,14 @@
+# synthesis update 2021-12-15
+# Change in intensity, past-present, RX1day, Earth, 10 yr
+# representation uncertainty (2&sigma;)     13.0    %
+# model chi2/dof =     0.6073    
+# model uncertainty is neglected
+ 1900 2020  -0.391E-01   -9.19        9.14       -14.5        16.2      1 "chirps "
+ 1900 2020   -10.4       -22.5        1.02       -25.9        6.38      1 "era5land "
+ 1900 2020   -9.83       -13.1       -1.33       -20.7        4.98      1 "mswep "
+ 1900 2020   -6.86       -20.1        9.04       -20.1        9.04      2 "observations "
+ 1900 2020    1.85       0.913        3.64       0.913        3.64      3 "CanESM2 r1i1p1 CRCM5 () "
+ 1900 2020    1.79       0.825        3.64       0.825        3.64      3 "HadGEM2-ES r1i1p1 RegCM4-7 () "
+ 1900 2020    1.23       0.631        2.31       0.631        2.31      3 "MPI-ESM-LR r1i1p1 REMO2015 () "
+ 1900 2020    1.48        1.03        2.31        1.03        2.31      4 "models "
+ 1900 2020    1.47        1.02        2.29       -9.98        5.21      5 "synthesis "
