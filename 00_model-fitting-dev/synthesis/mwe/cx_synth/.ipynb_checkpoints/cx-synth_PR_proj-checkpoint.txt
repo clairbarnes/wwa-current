@@ -1,6 +1,0 @@
-# synthesis update 2021-12-15
-# Probability ratio, present-future, RX1day, Earth, 10 yr
- 2020 2050   0.565       0.267        1.11       0.267        1.11      3 "CanESM2 r1i1p1 CRCM5 () "
- 2020 2050   0.546       0.261        1.19       0.261        1.19      3 "HadGEM2-ES r1i1p1 RegCM4-7 () "
- 2020 2050   0.787       0.419        1.59       0.419        1.59      3 "MPI-ESM-LR r1i1p1 REMO2015 () "
- 2020 2050   0.624       0.415       0.945       0.415       0.945      4 "models "
