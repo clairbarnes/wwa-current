@@ -172,14 +172,14 @@ def read_results(fnm):
 ###############################################################################################################
 ## PLOTTING
 
-def sc_xlabels(dates, ax = None):
+def sc_xlabels(dates, ax = None, at_day = 1):
     
     # method to add labels to seasonal cycle plot
     
     if ax is None: ax = plt.gca()
     
-    labelticks = [i for i in range(366) if dates.dt.day[i] == 1]
-    labels = [dates[i].dt.strftime("%b").values for i in range(366) if dates.dt.day[i] == 1]
+    labelticks = [i for i in range(366) if dates.dt.day[i] == at_day]
+    labels = [dates[i].dt.strftime("%b").values for i in range(366) if dates.dt.day[i] == at_day]
 
     ax.set_xticks(labelticks)
     ax.set_xticklabels(labels)
