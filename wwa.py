@@ -195,6 +195,24 @@ def xyline(x, y, ax = None, npoly = 1, **plot_kwargs):
     if not ax: fig, ax = plt.subplots(figsize = (5,3))
     ax.plot(np.sort(x), np.poly1d(np.polyfit(x, y, npoly))(np.sort(x)), **plot_kwargs)
     
+    
+# get x & y coordinates for projected plotting
+def project_latlon(da, to_crs):
+        
+    if "lon" in da.dims: da = da.rename(lon = "longitude", lat = "latitude")
+    
+    # convert dataArray to dataframe
+    df = da.to_dataframe().reset_index()
+    
+    # convert to geoDataFrame, reproject points to Statistics Canada Lambert 
+    gdf = gpd.GeoDataFrame(df[df.columns[-1]], geometry = gpd.points_from_xy(df.longitude, df.latitude))
+    gdf = gdf.set_crs(epsg = 4326).to_crs(to_crs)
+    
+    x = np.reshape(np.array(gdf.geometry.x), da.shape)
+    y = np.reshape(np.array(gdf.geometry.y), da.shape)
+    
+    return x,y
+
 ###############################################################################################################
 ## DROUGHT PLOTTING FUNCTIONS
 
