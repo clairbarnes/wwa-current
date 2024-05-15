@@ -21,6 +21,7 @@
 *.zip
 
 */sf_*
+*/sf/*
 
 99_scratch/*
 23-12_black-sea-floods/stations/*
