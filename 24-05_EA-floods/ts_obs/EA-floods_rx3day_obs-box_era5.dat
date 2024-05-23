@@ -1,5 +1,5 @@
 # contact :: ERA5 MAM maxima of rx3day averaged over Central Highlands - East Africa floods 2024, c.barnes22@imperial.ac.uk 
-# rx3day [mm] March-May maxima of 3-day accumulated precipitation at EA-floods_rx3day_obs-box_era5.dat
+# rx3day [mm/30day] March-May maxima of 3-day accumulated precipitation at EA-floods_rx3day_obs-box_era5.dat
 # year rx3day
 1950 49.82041931152344
 1951 50.75364685058594

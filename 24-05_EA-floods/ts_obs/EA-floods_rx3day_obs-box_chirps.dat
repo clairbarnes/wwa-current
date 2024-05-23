@@ -1,5 +1,5 @@
 # contact :: CHIRPS MAM maxima of rx3day averaged over Central Highlands - East Africa floods 2024, c.barnes22@imperial.ac.uk 
-# rx3day [mm] March-May maxima of 3-day accumulated precipitation at EA-floods_rx3day_obs-box_chirps.dat
+# rx3day [mm/30day] March-May maxima of 3-day accumulated precipitation at EA-floods_rx3day_obs-box_chirps.dat
 # year rx3day
 1981 64.29451751708984
 1982 59.5858268737793
