@@ -1,6 +1,6 @@
 # contact :: CMIP6 IPSL-CM6A-LR_r1i1p1f1 MAM maxima of rx30day - East Africa floods 2024, c.barnes22@imperial.ac.uk 
-# pr [mm] March-May maximum of 30-day accumulated precipitation over Tanzania/Burundi/SW Kenya at EA-floods_rx30day-org_cmip6_IPSL-CM6A-LR_r1i1p1f1.dat
-# year pr
+# rx30day [mm/30day] March-May maximum of 30-day accumulated precipitation over Tanzania/Burundi/SW Kenya at EA-floods_rx30day-org_cmip6_IPSL-CM6A-LR_r1i1p1f1.dat
+# year rx30day
 1850 235.0597686767578
 1851 239.68341064453125
 1852 225.17794799804688
