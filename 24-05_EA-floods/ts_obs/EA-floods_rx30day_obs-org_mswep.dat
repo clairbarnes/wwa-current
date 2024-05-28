@@ -1,5 +1,5 @@
 # contact :: MSWEP MAM maxima of rx30day averaged over Tanzania/Burundi/SW Kenya - East Africa floods 2024, c.barnes22@imperial.ac.uk 
-# rx30day [mm] March-May maxima of 30-day accumulated precipitation at EA-floods_rx30day_obs-org_mswep.dat
+# rx30day [mm/30day] March-May maxima of 30-day accumulated precipitation at EA-floods_rx30day_obs-org_mswep.dat
 # year rx30day
 1979 232.8565673828125
 1980 185.81027221679688

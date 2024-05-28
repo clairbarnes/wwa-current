@@ -1,5 +1,5 @@
 # contact :: CHIRPS MAM maxima of rx30day averaged over Tanzania/Burundi/SW Kenya - East Africa floods 2024, c.barnes22@imperial.ac.uk 
-# rx30day [mm] March-May maxima of 30-day accumulated precipitation at EA-floods_rx30day_obs-org_chirps.dat
+# rx30day [mm/30day] March-May maxima of 30-day accumulated precipitation at EA-floods_rx30day_obs-org_chirps.dat
 # year rx30day
 1981 263.276123046875
 1982 187.42779541015625
