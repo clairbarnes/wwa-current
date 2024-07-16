@@ -357,6 +357,12 @@ def nearest_px(x,y,da, xcoord = "longitude", ycoord = "latitude", return_map = F
         val = da.where(dist2 == dist2.min()).mean([xcoord, ycoord])
         return val
 
+    
+# get the largest polygon from a GeoDataFrame with multipolygons
+def main_polygon(gdf):
+    gdf = gdf.dissolve().explode(index_parts = False)
+    gdf = gdf.loc[gdf.geometry.area == gdf.geometry.area.max()]
+    return gdf
 
 
 ###############################################################################################################
