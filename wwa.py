@@ -172,17 +172,37 @@ def read_results(fnm):
 ###############################################################################################################
 ## PLOTTING
 
-def sc_xlabels(dates, ax = None, at_day = 1):
+# def sc_xlabels(dates, ax = None, at_day = 1):
     
-    # method to add labels to seasonal cycle plot
+#     # method to add labels to seasonal cycle plot
     
+#     if ax is None: ax = plt.gca()
+    
+#     labelticks = [i for i in range(366) if dates.dt.day[i] == at_day]
+#     labels = [dates[i].dt.strftime("%b").values for i in range(366) if dates.dt.day[i] == at_day]
+
+#     ax.set_xticks(labelticks)
+#     ax.set_xticklabels(labels)
+    
+    
+def doy_axes(ax = None):
+    
+    
+    # nicer method to add labels to seasonal cycle plot
+    # make nicer axis labels when you're plotting against day of year
     if ax is None: ax = plt.gca()
     
-    labelticks = [i for i in range(366) if dates.dt.day[i] == at_day]
-    labels = [dates[i].dt.strftime("%b").values for i in range(366) if dates.dt.day[i] == at_day]
+    # define axis labels for DOY plotting
+    days = pd.date_range(start = "2020-01-01", end = "2020-12-31")
+    lineticks = [i+1 for i in range(366) if (days[i].day) == 1]
+    labelticks = [i+1 for i in range(366) if (days[i].day) == 16]
+    labels = [days[i].strftime("%b") for i in range(366) if (days[i].day) == 16]
 
+    # actually draw the axes & gridlines
     ax.set_xticks(labelticks)
     ax.set_xticklabels(labels)
+    [ax.axvline(x, color = "k", alpha = 0.1, lw = 1) for x in lineticks]
+    ax.set_xlabel("")
 
     
 # method to get DOY offset for years starting other than in January
