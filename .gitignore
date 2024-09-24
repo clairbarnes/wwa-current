@@ -22,8 +22,9 @@ z_*.ipynb
 *.xlsx
 *.zip
 
+*/sf*
 */sf_*
-*/sf/*
+*/*/sf_*
 
 99_scratch/*
 23-12_black-sea-floods/stations/*
