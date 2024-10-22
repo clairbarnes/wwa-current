@@ -219,7 +219,7 @@ def xyline(x, y, ax = None, npoly = 1, **plot_kwargs):
 # get x & y coordinates for projected plotting
 def project_latlon(da, to_crs):
         
-    if "lon" in da.dims: da = da.rename(lon = "longitude", lat = "latitude")
+    if "lon" in da.coords: da = da.rename(lon = "longitude", lat = "latitude")
     
     # convert dataArray to dataframe
     df = da.to_dataframe().reset_index()
