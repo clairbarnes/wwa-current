@@ -233,6 +233,25 @@ def project_latlon(da, to_crs):
     
     return x,y
 
+
+# asymmetric divergent colourbar
+class MidpointNormalize(matplotlib.colors.Normalize):
+    """ From: https://matplotlib.org/users/colormapnorms.html"""
+    def __init__(self, vmin=None, vmax=None, midpoint=0, clip=False):
+        self.midpoint = midpoint
+        matplotlib.colors.Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+
+        result, is_scalar = self.process_value(value)
+        self.autoscale_None(result)
+
+        vlargest = max( abs( self.vmax - self.midpoint ), abs( self.vmin - self.midpoint ) )
+        x, y = [ self.midpoint - vlargest, self.midpoint, self.midpoint + vlargest], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
+
 ###############################################################################################################
 ## DROUGHT PLOTTING FUNCTIONS
 
