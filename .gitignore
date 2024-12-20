@@ -7,9 +7,11 @@ z_*.ipynb
 *pycache*
 
 *.csv
+*.dat
 *.docx
 *.gif
 *.grib
+*.grib.*.idx
 *.jpg
 *.json
 *.nc
