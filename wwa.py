@@ -13,7 +13,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from functools import reduce
 
-from xclim.core.calendar import convert_calendar
+# from xclim.core.calendar import convert_calendar
 from xclim.core.units import convert_units_to
 from xclim.indices._conversion import potential_evapotranspiration
 
@@ -72,105 +72,105 @@ def qqplot(ts, ax = None, dist = norm, marker = ".", ax_labels = True, **kwargs)
         ax.set_xlabel("Fitted"); ax.set_ylabel("Observed")
         
 
-###############################################################################################################
-## METHODS FOR EXTRACTING USEFUL INFORMATION FROM RESULTS FILES
+# ###############################################################################################################
+# ## METHODS FOR EXTRACTING USEFUL INFORMATION FROM RESULTS FILES
 
-def clean_line(l): return re.sub(" +", " ", re.sub("\\.\\.\\.", "", re.sub("<.+?>", " ", l)))
+# def clean_line(l): return re.sub(" +", " ", re.sub("\\.\\.\\.", "", re.sub("<.+?>", " ", l)))
 
-def read_results(fnm): 
+# def read_results(fnm): 
     
-    # initialise a couple of empty variables
-    mu_prime = []; sigma_prime = []; disp = [None, None, None]; y_start = ""; y_end = ""; fitted_rp = ""
+#     # initialise a couple of empty variables
+#     mu_prime = []; sigma_prime = []; disp = [None, None, None]; y_start = ""; y_end = ""; fitted_rp = ""
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # identify type of analysis carried out
-    if "attr-now" in fnm:
-        atype = "present"
-    elif "attr-fut" in fnm:
-        atype = "future"
-    elif "val" in fnm:
-        atype = "validation"
-    else:
-        atype = "?"
+#     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#     # identify type of analysis carried out
+#     if "attr-now" in fnm:
+#         atype = "present"
+#     elif "attr-fut" in fnm:
+#         atype = "future"
+#     elif "val" in fnm:
+#         atype = "validation"
+#     else:
+#         atype = "?"
         
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # loop over all lines and extract sections of interest
-    for line in open(fnm, "r").read().splitlines():
+#     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#     # loop over all lines and extract sections of interest
+#     for line in open(fnm, "r").read().splitlines():
         
-        # options used to run analysis (mainly for checking purposes)
-        if "scripturl02" in line: opts = {s.split("=")[0].lower() : s.split("=")[1] for s in line.split("&")}
-        if "covariate_description" in line: covariate_file = re.sub(".+:: ", "", line)
-        if "covariate_file" in line: covariate_file = re.sub(".+:: ", "", line)
-        if ">N:<" in line: N = re.sub("\D+", "", line)
+#         # options used to run analysis (mainly for checking purposes)
+#         if "scripturl02" in line: opts = {s.split("=")[0].lower() : s.split("=")[1] for s in line.split("&")}
+#         if "covariate_description" in line: covariate_file = re.sub(".+:: ", "", line)
+#         if "covariate_file" in line: covariate_file = re.sub(".+:: ", "", line)
+#         if ">N:<" in line: N = re.sub("\D+", "", line)
         
-        # parameter estimates & ranges
-        if "mu;':" in line: mu_prime.append(clean_line(line).split(" ")[2:])
-        if "sigma;':" in line: sigma_prime.append(clean_line(line).split(" ")[2:])
-        if "sigma;/&mu;:" in line: disp = clean_line(line).split(" ")[2:]
-        if "alpha;:" in line: alpha = clean_line(line).split(" ")[2:]
+#         # parameter estimates & ranges
+#         if "mu;':" in line: mu_prime.append(clean_line(line).split(" ")[2:])
+#         if "sigma;':" in line: sigma_prime.append(clean_line(line).split(" ")[2:])
+#         if "sigma;/&mu;:" in line: disp = clean_line(line).split(" ")[2:]
+#         if "alpha;:" in line: alpha = clean_line(line).split(" ")[2:]
         
-        if "return period event" in line: mag = clean_line(line).split(" ")[6]
+#         if "return period event" in line: mag = clean_line(line).split(" ")[6]
         
-        # estimated properties of distributions
-        if "atr1" in line: rp = clean_line(line).split(" ")[-4:-1]
-        if "atra" in line: pr = clean_line(line).split(" ")[-4:-1]
-        if "change in intensity" in line: DeltaI = clean_line(line).split(" ")[-4:-1]
+#         # estimated properties of distributions
+#         if "atr1" in line: rp = clean_line(line).split(" ")[-4:-1]
+#         if "atra" in line: pr = clean_line(line).split(" ")[-4:-1]
+#         if "change in intensity" in line: DeltaI = clean_line(line).split(" ")[-4:-1]
         
-    # convert options into more useful information
-    y = opts["year"]
-    if "begin" in opts.keys(): y_start = opts["begin"]
-    if "end" in opts.keys(): y_end = opts["end"]
-    if "biasrt" in opts.keys(): fitted_rp = opts["biasrt"]
+#     # convert options into more useful information
+#     y = opts["year"]
+#     if "begin" in opts.keys(): y_start = opts["begin"]
+#     if "end" in opts.keys(): y_end = opts["end"]
+#     if "biasrt" in opts.keys(): fitted_rp = opts["biasrt"]
         
-    covariate_matched = (covariate_file.split(" ")[2] in opts["station"]) and (covariate_file.split(" ")[4] in opts["station"])
+#     covariate_matched = (covariate_file.split(" ")[2] in opts["station"]) and (covariate_file.split(" ")[4] in opts["station"])
     
-    mu_prime = [m[1:] for m in mu_prime if m[0] == opts["year"]][0]
-    sigma_prime = [s[1:] for s in sigma_prime if s[0] == opts["year"]][0]
+#     mu_prime = [m[1:] for m in mu_prime if m[0] == opts["year"]][0]
+#     sigma_prime = [s[1:] for s in sigma_prime if s[0] == opts["year"]][0]
     
-    lower_tail = "changesign" in opts.keys()
+#     lower_tail = "changesign" in opts.keys()
     
-    # will probably also need to confirm whether shape parameter was constrained
-    # should also add whether data was transformed
+#     # will probably also need to confirm whether shape parameter was constrained
+#     # should also add whether data was transformed
             
-    # return DataFrame of key information (some for confirmation, some to input into sheet)
-    return pd.DataFrame({"dataset" : opts["station"],
-                         "covariate" : covariate_file,
-                         "covariate_matched" : covariate_matched,
-                         "attr_type" : atype,
-                         "distribution" : opts["fit"], 
-                         "fit_type" : opts["assume"],
-                         "lower_tail" : lower_tail,
-                         "include_event" : opts["includelast"] == "on",
-                         "fitted_years" : y_start+"-"+y_end,
-                         "N" : N,
-                         "event_year" : opts["year"],
-                         "vs_gmst" : opts["cov1"],
-                         "return_time" : fitted_rp,
-                         "sigma_est" : sigma_prime[0],
-                         "sigma_lower" : sigma_prime[1],
-                         "sigma_upper" : sigma_prime[2],
-                         "disp_est" : disp[0],
-                         "disp_lower" : disp[1],
-                         "disp_upper" : disp[2],
-                         "alpha_est" : alpha[0],
-                         "alpha_lower" : alpha[1],
-                         "alpha_upper" : alpha[2],
-                         "event_magnitude" : mag,
-                         "rp_est" : rp[0],
-                         "rp_lower" : rp[1],
-                         "rp_upper" : rp[2],
-                         "gmst_now" : str(-float(opts["cov1"])),
-                         "pr_est" : pr[0],
-                         "pr_lower" : pr[1],
-                         "pr_upper" : pr[2],
-                         "DI_est" : DeltaI[0],
-                         "DI_lower" : DeltaI[1],
-                         "DI_upper" : DeltaI[2],
-                        },
-                        index = [re.sub("\\..+", "", re.sub(".+/", "", fnm))])
+#     # return DataFrame of key information (some for confirmation, some to input into sheet)
+#     return pd.DataFrame({"dataset" : opts["station"],
+#                          "covariate" : covariate_file,
+#                          "covariate_matched" : covariate_matched,
+#                          "attr_type" : atype,
+#                          "distribution" : opts["fit"], 
+#                          "fit_type" : opts["assume"],
+#                          "lower_tail" : lower_tail,
+#                          "include_event" : opts["includelast"] == "on",
+#                          "fitted_years" : y_start+"-"+y_end,
+#                          "N" : N,
+#                          "event_year" : opts["year"],
+#                          "vs_gmst" : opts["cov1"],
+#                          "return_time" : fitted_rp,
+#                          "sigma_est" : sigma_prime[0],
+#                          "sigma_lower" : sigma_prime[1],
+#                          "sigma_upper" : sigma_prime[2],
+#                          "disp_est" : disp[0],
+#                          "disp_lower" : disp[1],
+#                          "disp_upper" : disp[2],
+#                          "alpha_est" : alpha[0],
+#                          "alpha_lower" : alpha[1],
+#                          "alpha_upper" : alpha[2],
+#                          "event_magnitude" : mag,
+#                          "rp_est" : rp[0],
+#                          "rp_lower" : rp[1],
+#                          "rp_upper" : rp[2],
+#                          "gmst_now" : str(-float(opts["cov1"])),
+#                          "pr_est" : pr[0],
+#                          "pr_lower" : pr[1],
+#                          "pr_upper" : pr[2],
+#                          "DI_est" : DeltaI[0],
+#                          "DI_lower" : DeltaI[1],
+#                          "DI_upper" : DeltaI[2],
+#                         },
+#                         index = [re.sub("\\..+", "", re.sub(".+/", "", fnm))])
 
 
-###############################################################################################################
+# ###############################################################################################################
 ## PLOTTING
 
 # def sc_xlabels(dates, ax = None, at_day = 1):
@@ -341,11 +341,11 @@ def get_latlon(city):
         return {"lon" : location.longitude, "lat" : location.latitude}
 
 
-def normalised_seasonal_cycle(ts):
+# def normalised_seasonal_cycle(ts):
     
-    ts = convert_calendar(ts, "default", align_on = "date")
-    sc = ts.groupby("time.dayofyear").mean()
-    return sc / sc.mean()
+#     ts = convert_calendar(ts, "default", align_on = "date")
+#     sc = ts.groupby("time.dayofyear").mean()
+#     return sc / sc.mean()
 
 
 def eval_df(ens, region = None):
