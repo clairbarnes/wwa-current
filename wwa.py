@@ -236,7 +236,7 @@ def project_latlon(da, to_crs):
 
 
 # asymmetric divergent colourbar
-class MidpointNormalize(matplotlib.colors.Normalize):
+class MidpointNormalise(matplotlib.colors.Normalize):
     """ From: https://matplotlib.org/users/colormapnorms.html"""
     def __init__(self, vmin=None, vmax=None, midpoint=0, clip=False):
         self.midpoint = midpoint
