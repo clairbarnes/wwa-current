@@ -14,8 +14,8 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from functools import reduce
 
 # from xclim.core.calendar import convert_calendar
-from xclim.core.units import convert_units_to
-from xclim.indices._conversion import potential_evapotranspiration
+# from xclim.core.units import convert_units_to
+# from xclim.indices._conversion import potential_evapotranspiration
 
 import os; os.environ['PROJ_LIB'] = '/home/clair/miniconda3/envs/wwa/share/proj'                         # fixes error message on import of cartopy etc
 
