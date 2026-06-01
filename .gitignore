@@ -23,6 +23,7 @@ z_*.ipynb
 *.txt
 *.xlsx
 *.zip
+wget*.sh
 
 */sf*
 */sf_*
@@ -34,3 +35,4 @@ rwwa/*
 01_exploratory/*
 23-12_black-sea-floods/stations/*
 10_misc/cordex_domains/
+00_training/25-10_climate-models/
